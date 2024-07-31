@@ -1,16 +1,66 @@
 #import "@preview/fontawesome:0.2.1": *
 
-#let _cv-line(left, right, ..args) = {
-  set block(below: 0pt)
-  table(
-    columns: (1fr, 5fr),
-    stroke: none,
-    ..args.named(),
-    left,
-    right,
+#let beware-modern-blue = rgb(50, 82, 122)
+
+#let heading-line(line-fr, title-fr, title) = {
+  set text(weight: "regular", size: 12.4pt)
+  set block(above: 6pt, below: 3pt)
+  grid(
+    columns: (line-fr, title-fr),
+    gutter: 0pt,
+    inset: 4pt,
+    align: horizon,
+    [#box(fill: beware-modern-blue, radius: 1em, width: 21mm, height: 0.18em)],
+    align(left, text(fill: beware-modern-blue, title))
   )
 }
-#let moderncv-blue = rgb("#3973AF")
+
+#let subheading-line(line-fr, title-fr, title) = {
+  set text(weight: "regular", size: 10pt)
+  set block(above: 2pt, below: 2pt)
+  grid(
+    columns: (line-fr, title-fr),
+    gutter: 0pt,
+    inset: 4pt,
+    align: horizon,
+    [#line(length: 21mm, stroke: (paint: beware-modern-blue, thickness: 0.04em, dash: "dashed"))],
+    align(left, text(fill: beware-modern-blue, title))
+  )
+}
+
+#let cv-repo(name: [], description: [], github: []) = {
+  set block(below: 0pt)
+
+  place(
+    right,
+    dy: 3pt,
+    text(
+      8pt,
+      fill: luma(25%),
+      [#text(baseline: 1pt, fa-icon("github")) #link("https://github.com/" + github)[#github]]
+    )
+  )
+
+  table(
+    columns: (1fr, 7fr),
+    stroke: none,
+    align(right, name),
+    description
+  )
+}
+
+#let cv-talk(date: [], title: [], event: [], venue: []) = {
+  set block(below: 0pt)
+  set text(8pt)
+
+  place(right, dy: 4pt, text(8pt, fill: luma(25%), [#fa-icon("location-dot") #venue]))
+  table(
+    columns: (1fr, 7fr),
+    stroke: none,
+    align(right, date),
+    [#strong(title), #emph(event)]
+  )
+}
 
 #let _header(
   title: [],
@@ -20,8 +70,9 @@
   let titleStack = stack(
     dir: ttb,
     spacing: 1em,
-    text(size: 30pt, title),
-    text(size: 20pt, subtitle),
+    text(size: 14.4pt, weight: "bold", title),
+    text(size: 10pt, weight: "bold", subtitle),
+    block(below: 2pt),
   )
 
   let social(icon, link_prefix, username) = [
@@ -35,137 +86,258 @@
   if "email" in socials {
     socialsList.push(social("envelope", "mailto:", socials.email))
   }
+  if "web" in socials {
+    socialsList.push(social("globe", "https://", socials.web))
+  }
   if "github" in socials {
     socialsList.push(social("github", "https://github.com/", socials.github))
   }
   if "linkedin" in socials {
-    socialsList.push(
-      social("linkedin", "https://linkedin.com/in/", socials.linkedin),
-    )
+    socialsList.push(social("linkedin", "https://linkedin.com/in/", socials.linkedin))
   }
 
   let socialStack = stack(
-    dir: ttb,
-    spacing: 0.5em,
+    dir: ltr,
+    spacing: 1.5em,
     ..socialsList,
   )
 
-  stack(
-    dir: ltr,
-    titleStack,
-    align(
-      right + top,
-      socialStack,
-    ),
+  place(
+    right,
+    text(8pt, fill: luma(25%), socialStack),
   )
+
+  block(
+    below: 4pt,
+    stack(
+      dir: ltr,
+      titleStack,
+    )
+  )
+
 }
 
-#let moderner-cv(
+#let beware-modern-cv(
   name: [],
   subtitle: [CV],
   social: (:),
-  color: moderncv-blue,
+  color: beware-modern-blue,
   lang: "en",
   font: ("New Computer Modern"),
-  show-footer: true,
   body,
 ) = [
   #set page(
     paper: "a4",
     margin: (
       top: 10mm,
-      bottom: 15mm,
-      left: 15mm,
-      right: 15mm,
+      bottom: 4mm,
+      left: 10mm,
+      right: 10mm,
     ),
   )
   #set text(
     font: font,
     lang: lang,
+    size: 10pt,
   )
 
-  #show heading: it => {
-    set text(weight: "regular")
-    set text(color)
-    set block(above: 0pt)
-    _cv-line(
-      [],
-      [#it.body],
-    )
-  }
   #show heading.where(level: 1): it => {
-    set text(weight: "regular")
-    set text(color)
-    _cv-line(
-      align: horizon,
-      [#box(fill: color, width: 28mm, height: 0.25em)],
-      [#it.body],
-    )
+    heading-line(1fr, 7fr, it.body)
+  }
+
+  #show heading.where(level: 2): it => {
+    subheading-line(1fr, 7fr, it.body)
   }
 
   #_header(title: name, subtitle: subtitle, socials: social)
 
   #body
-
-  #if show-footer [
-    #v(1fr, weak: false)
-    #name\
-    #datetime.today().display("[month repr:long] [day], [year]")
-  ]
 ]
 
-#let cv-line(left-side, right-side) = {
-  _cv-line(
-    align(right, left-side),
-    par(right-side, justify: true),
+#let intro(content) = {
+  block(
+    width: 94%,
+    text(10pt, hyphenate: true, content)
   )
+}
+
+#let education(date: [], degree: [], institution: []) = {
+  set block(below: 0pt)
+  table(
+    columns: (1fr, 7fr),
+    stroke: none,
+    align(right, date),
+    [#strong(degree), #emph(institution)]
+  ) 
 }
 
 #let cv-entry(
   date: [],
   title: [],
   employer: [],
-  ..description,
+  projects: []
 ) = {
-  let elements = (
-    strong(title),
-    emph(employer),
-    ..description.pos(),
-  )
-  cv-line(
-    date,
-    elements.join(", "),
+  grid(
+    columns: (1fr),
+    table(
+      gutter: 0pt,
+      inset: (y: 1pt, x: 0pt),
+      stroke: none,
+      columns: (4fr, 1fr),
+      [#strong(title), #emph(employer)],
+      align(horizon + right, text(6pt, [#fa-icon("calendar") #date]))
+    ),
+    block(
+      inset: (y: 0.5em),
+      for p in projects [#block(text(8pt, hyphenate: true, [#strong(p.short): #p.details]))]
+    )
   )
 }
 
-#let cv-language(name: [], level: [], comment: []) = {
-  _cv-line(
-    align(right, name),
-    stack(dir: ltr, level, align(right, emph(comment))),
+#let cv-small-entry-with-date(date: [], name: [], description: []) = {
+  set block(below: 0pt)
+  set text(8pt)
+  table(
+    columns: (1fr, 7fr),
+    stroke: none,
+    align(right, date),
+    [#text(weight: "bold", name), #text(description)]
   )
 }
 
-#let cv-double-item(left-1, right-1, left-2, right-2) = {
+#let cv-category-grid(items) = {
+  let args = ()
+  for (category, content) in items {
+    args.push(align(right, text(weight: "bold", category)))
+    args.push(emph(content))
+  }
+  
   set block(below: 0pt)
   table(
-    columns: (1fr, 2fr, 1fr, 2fr),
-    stroke: none,
-    align(right, left-1), right-1, align(right, left-2), right-2,
+    columns: (1fr, 3fr, 1fr, 3fr),
+    stroke: none, 
+    ..args
   )
 }
 
-#let cv-list-item(item) = {
-  _cv-line(
-    [],
-    list(item),
-  )
-}
-
-#let cv-list-double-item(item1, item2) = {
+#let cv-small-category-list(items) = {
+  set text(8pt)
+  let args = ()
+  for (category, content) in items {
+    args.push(align(right, text(weight: "bold", category)))
+    args.push(emph(content))
+  }
   set block(below: 0pt)
   table(
-    columns: (1fr, 2.5fr, 2.5fr),
+    columns: (1fr, 7fr),
     stroke: none,
-    [], list(item1), list(item2),
+    ..args
+  )
+}
+
+#let cv-two-column(left, right) = {
+  block(
+    above: 6pt,
+    grid(
+      columns: (5fr, 3fr),
+      gutter: 0pt,
+      column-gutter: 10pt,
+      inset: 0pt,
+      left,
+      right
+    )
+  )
+}
+
+#let cv-career-experience(positions: (), passions: (), achievements: ()) = {
+  let positions-list = ()
+  for p in positions {
+    positions-list.push(cv-entry(
+      date: p.date,
+      employer: p.employer,
+      title: p.title,
+      projects: p.projects
+    ))
+  }
+  
+  let passions-list = ()
+  for p in passions {
+    passions-list.push(grid(
+      columns: (1fr, 9fr),
+      row-gutter: 10pt,
+      text(10pt, fa-icon(p.icon)),
+      text(8pt, p.content)
+    ))
+  }
+  let passions-list-formatted = passions-list.intersperse(
+    grid.cell(
+      align(
+        center,
+        line(
+          length: 95%,
+          stroke: (paint: beware-modern-blue, thickness: 0.04em, dash: "dashed")
+        )
+      )
+    )
+  )
+
+  let achievements-list = ()
+  for a in achievements {
+    achievements-list.push(grid(
+      columns: (1fr, 9fr),
+      row-gutter: 10pt,
+      text(10pt, fa-icon(a.icon)),
+      text(8pt, a.content)
+    ))
+  }
+  let achievements-list-formatted = achievements-list.intersperse(
+    grid.cell(
+      align(
+        center,
+        line(
+          length: 95%,
+          stroke: (paint: beware-modern-blue, thickness: 0.04em, dash: "dashed")
+        )
+      )
+    )
+  )
+  cv-two-column(
+    [
+      #block(
+        below: 6pt,
+        heading-line(1fr, 4fr, "Experience")
+      )
+      #list(..positions-list)
+    ],
+
+    [
+      #block(
+        below: 6pt,
+        heading-line(1fr, 2fr, "Passions")
+      )
+
+      #block(
+        below: 9pt,
+        grid(
+          columns: (100%),
+          row-gutter: 10pt,
+          ..passions-list-formatted
+        )
+      )
+
+      #block(
+        below: 6pt,
+        heading-line(1fr, 2fr, "Achievements")
+      )
+
+      #block(
+        below: 9pt,
+        grid(
+          columns: (100%),
+          row-gutter: 10pt,
+          ..achievements-list-formatted
+        )
+      )
+    ]
   )
 }
