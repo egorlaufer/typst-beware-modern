@@ -1,8 +1,8 @@
 # beware-modern-cv
 
 Modified [moderner-cv](https://typst.app/universe/package/moderner-cv) template.
-Modernercv is a typst adaptation of LaTeX's [moderncv](https://github.com/
-moderncv/moderncv), a modern curriculum vitae class.
+Modernercv is a typst adaptation of LaTeX's [moderncv](https://github.com/moderncv/moderncv),
+a modern curriculum vitae class.
 
 ## Name
 - The name of this template pays homage to the TV shows "Ostorozhno Modern" and "Polny Modern".
