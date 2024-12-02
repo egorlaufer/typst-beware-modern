@@ -80,6 +80,9 @@
   ]
 
   let socialsList = ()
+  if "location" in socials {
+    socialsList.push([ #fa-icon("globe") #socials.location ])
+  }
   if "phone" in socials {
     socialsList.push(social("phone", "tel:", socials.phone))
   }
@@ -184,7 +187,11 @@
       inset: (y: 1pt, x: 0pt),
       stroke: none,
       columns: (4fr, 1fr),
-      [#strong(title), #emph(employer)],
+      [#if employer != [] {
+        [#strong(title), #emph(employer)]
+      } else {
+        [#strong(title)]
+      }],
       align(horizon + right, text(6pt, [#fa-icon("calendar") #date]))
     ),
     block(
@@ -229,7 +236,7 @@
   }
   set block(below: 0pt)
   table(
-    columns: (1fr, 7fr),
+    columns: (1fr, 3fr, 1fr, 3fr),
     stroke: none,
     ..args
   )

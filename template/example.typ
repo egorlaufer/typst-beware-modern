@@ -5,6 +5,7 @@
   subtitle: "Welder",
   lang: "en",
   social: (
+    location: "Tikhvin",
     email: "kaylo@example.com",
   ),
 )
