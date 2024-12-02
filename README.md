@@ -6,7 +6,7 @@ a modern curriculum vitae class.
 
 ## Name
 - The name of this template pays homage to the TV shows "Ostorozhno Modern" and "Polny Modern".
-- "Kaylo" was chosen for the example PDF, reflecting our shared experience of growing up in Leningrad Oblast.
+- The character Kaylo was chosen for the example PDF, reflecting our shared experience of growing up in Leningrad Oblast.
 
 ## Using This Template
 - Don't Use This Template as a Package
